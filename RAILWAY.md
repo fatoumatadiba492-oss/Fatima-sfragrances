@@ -69,3 +69,5 @@ Le script migre les produits, ventes, crédits, réapprovisionnements et paramè
 ## 5. Local
 
 Le fonctionnement local reste identique : SQLite est utilisee si `DATABASE_URL` n'est pas definie.
+
+Le schema SQL pret a coller dans Supabase se trouve dans `backend/server/supabase_schema.sql`.
