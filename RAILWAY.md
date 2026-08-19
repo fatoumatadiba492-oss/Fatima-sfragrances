@@ -50,6 +50,22 @@ VITE_API_URL=https://votre-backend.up.railway.app
 
 Apres avoir obtenu le domaine frontend, reporter ce domaine dans `CORS_ORIGINS` du backend.
 
-## 4. Local
+## 4. Migrer SQLite vers Supabase
+
+Place l'URL PostgreSQL Supabase dans `backend/server/.env` :
+
+```text
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
+```
+
+Depuis `backend/server`, lance :
+
+```powershell
+..\venv\Scripts\python.exe migrate_sqlite_to_postgres.py
+```
+
+Le script migre les produits, ventes, crédits, réapprovisionnements et paramètres. Il refuse de s'exécuter si `DATABASE_URL` pointe encore vers SQLite.
+
+## 5. Local
 
 Le fonctionnement local reste identique : SQLite est utilisee si `DATABASE_URL` n'est pas definie.
