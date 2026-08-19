@@ -6,6 +6,8 @@ Le projet se deploie comme deux services Railway dans le meme projet : un backen
 
 Dans Railway, creer un service **PostgreSQL**. Railway fournira la variable `DATABASE_URL`.
 
+La meme variable peut venir de Supabase ou Neon. Elle doit commencer par `postgresql://` (ou `postgres://`, qui est converti automatiquement).
+
 ## 2. Deployer le backend
 
 Creer un service depuis GitHub et definir le **Root Directory** a `backend/server`.

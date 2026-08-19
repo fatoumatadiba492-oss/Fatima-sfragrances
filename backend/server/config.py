@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # Base de données
+    # PostgreSQL en production; SQLite reste le fallback local.
     database_url = os.getenv('DATABASE_URL', 'sqlite:///parfums.db')
     if database_url.startswith('postgres://'):
         database_url = database_url.replace('postgres://', 'postgresql://', 1)
