@@ -14,7 +14,7 @@ class Config:
     # CORS
     CORS_ORIGINS = os.getenv(
         'CORS_ORIGINS',
-        'http://localhost:5173,http://localhost:3000,https://fatimafragrances.netlify.app,https://fatimafragrances.vercel.app'
+        'http://localhost:5000,http://localhost:3000,https://frontend-git-main-fd23.vercel.app/,'
     )
     
     # Secret

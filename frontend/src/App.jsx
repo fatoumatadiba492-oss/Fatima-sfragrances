@@ -6,7 +6,6 @@ import StockTable from './components/StockTable';
 import SettingsView from './components/SettingsView';
 import CreditSalesView from './components/CreditSalesView';
 import ExpensesView from './components/ExpensesView';
-
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
 const API_URL = `${BACKEND_URL}/api`;
 
