@@ -49,6 +49,15 @@ with app.app_context():
 
 # ==================== ROUTES ====================
 
+@app.route('/', methods=['GET'])
+def home():
+    """Page d'accueil publique du backend"""
+    return jsonify({
+        'status': 'ok',
+        'message': 'Backend Fatima\'s Fragrance opérationnel',
+        'api': '/api/health'
+    }), 200
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Vérification de l'état du serveur"""
