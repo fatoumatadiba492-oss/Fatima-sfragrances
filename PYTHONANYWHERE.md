@@ -21,13 +21,13 @@ Dans l'onglet **Web** :
 - Add a new web app
 - Manual configuration
 - Choisir Python 3
-- Virtualenv : `/home/TON_NOM/Fatima-sfragrances/backend/venv`
+- Virtualenv : `/home/fdiba23/Fatima-sfragrances/backend/venv`
 
 Dans le fichier WSGI, mettre :
 
 ```python
 import sys
-project_path = '/home/TON_NOM/Fatima-sfragrances/backend/server'
+project_path = '/home/fdiba23/Fatima-sfragrances/backend/server'
 if project_path not in sys.path:
     sys.path.insert(0, project_path)
 from app import app as application
@@ -46,7 +46,7 @@ Mettre :
 
 ```env
 DATABASE_URL=sqlite:///parfums.db
-CORS_ORIGINS=https://TON-SITE.netlify.app
+CORS_ORIGINS=https://fatimafragrances.netlify.app
 SECRET_KEY=une-cle-secrete-longue
 ```
 
@@ -57,7 +57,7 @@ Le fichier SQLite sera conserve sur PythonAnywhere avec le backend.
 Dans **Web**, cliquer sur **Reload**, puis ouvrir :
 
 ```text
-https://TON_NOM.pythonanywhere.com/api/health
+https://fdiba23.pythonanywhere.com/api/health
 ```
 
 ## 5. Connecter Netlify
@@ -65,7 +65,7 @@ https://TON_NOM.pythonanywhere.com/api/health
 Dans Netlify, ajouter la variable d'environnement :
 
 ```text
-VITE_API_URL=https://TON_NOM.pythonanywhere.com
+VITE_API_URL=https://fdiba23.pythonanywhere.com
 ```
 
 Puis lancer un nouveau deploy du frontend.
