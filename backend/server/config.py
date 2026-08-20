@@ -12,7 +12,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # CORS
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://localhost:3000')
+    CORS_ORIGINS = os.getenv(
+        'CORS_ORIGINS',
+        'http://localhost:5173,http://localhost:3000,https://fatimafragrances.netlify.app,https://fatimafragrances.vercel.app'
+    )
     
     # Secret
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
