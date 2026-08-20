@@ -7,7 +7,8 @@ import SettingsView from './components/SettingsView';
 import CreditSalesView from './components/CreditSalesView';
 import ExpensesView from './components/ExpensesView';
 
-const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
+const API_URL = `${BACKEND_URL}/api`;
 
 export default function App() {
     const [activeTab, setActiveTab] = useState('dashboard');
