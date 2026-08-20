@@ -1,7 +1,8 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).resolve().parent / '.env')
 
 class Config:
     # PostgreSQL en production; SQLite reste le fallback local.
@@ -14,7 +15,7 @@ class Config:
     # CORS
     CORS_ORIGINS = os.getenv(
         'CORS_ORIGINS',
-        'http://localhost:5000,http://localhost:3000,https://frontend-git-main-fd23.vercel.app/,'
+        'http://localhost:5000,http://localhost:3000,https://frontend-fd23.vercel.app'
     )
     
     # Secret
