@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="72" fill="#4d0c0c"/>
+  <g fill="#d7a83f" stroke="#d7a83f" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M154 188h128c28 0 42 14 42 36 0 19-10 31-29 37 24 4 38 17 38 42 0 26-17 41-49 41H154v-18h18V206h-18zm53 18v87h60c20 0 30-8 30-25 0-16-10-24-30-24h-60v-18h56c17 0 25-7 25-20z" stroke="none"/>
+    <path d="M254 330h105v18H254z" stroke="none"/>
+    <path d="M278 183c-20-42 5-84 37-111 3 40-5 72-27 101m39 8c3-43 29-72 68-88-3 43-23 75-62 94m-63 6c-33-35-70-41-111-30 25 34 59 48 104 44m-8 20c-26 35-57 51-101 52 19-39 50-59 94-66m36 0c31-32 66-38 106-25-22 34-56 47-101 40m-12-30c18-19 25-43 22-69-26 17-38 39-35 68" fill="none" stroke-width="15"/>
+  </g>
+  <text x="256" y="414" text-anchor="middle" fill="#d7a83f" font-family="Georgia,serif" font-size="34" font-weight="bold" letter-spacing="5">FATIMA'S</text>
+  <text x="256" y="452" text-anchor="middle" fill="#d7a83f" font-family="Georgia,serif" font-size="25" font-weight="bold" letter-spacing="3">FRAGRANCES</text>
+</svg>

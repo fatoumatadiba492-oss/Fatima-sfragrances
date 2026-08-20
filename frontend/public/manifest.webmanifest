@@ -1,0 +1,25 @@
+{
+  "name": "Fatima's Fragrances",
+  "short_name": "Fatima's Fragrance",
+  "description": "Gestion privée de Fatima's Fragrances",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#4d0c0c",
+  "theme_color": "#4d0c0c",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
