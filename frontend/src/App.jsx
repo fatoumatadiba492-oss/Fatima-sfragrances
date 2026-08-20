@@ -8,8 +8,12 @@ import CreditSalesView from './components/CreditSalesView';
 import ExpensesView from './components/ExpensesView';
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
 const API_URL = `${BACKEND_URL}/api`;
+const SITE_ACCESS_CODE = import.meta.env.VITE_SITE_ACCESS_CODE || 'change-moi';
 
 export default function App() {
+    const [isAuthorized, setIsAuthorized] = useState(() => localStorage.getItem('fatima-site-authorized') === 'true');
+    const [accessCode, setAccessCode] = useState('');
+    const [accessError, setAccessError] = useState('');
     const [activeTab, setActiveTab] = useState('dashboard');
     const [sales, setSales] = useState([]);
     const [stocks, setStocks] = useState([]);
@@ -134,8 +138,20 @@ export default function App() {
     };
 
     useEffect(() => {
-        loadData();
-    }, []);
+        if (isAuthorized) loadData();
+    }, [isAuthorized]);
+
+    const handleAccessSubmit = (event) => {
+        event.preventDefault();
+        if (accessCode === SITE_ACCESS_CODE) {
+            localStorage.setItem('fatima-site-authorized', 'true');
+            setIsAuthorized(true);
+            setAccessError('');
+        } else {
+            setAccessError('Code incorrect.');
+            setAccessCode('');
+        }
+    };
 
     // Notifications
     const showNotification = (message, type = 'success') => {
@@ -266,6 +282,29 @@ export default function App() {
             return { success: false, error: err.message };
         }
     };
+
+    if (!isAuthorized) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-orange-50 px-4">
+                <form onSubmit={handleAccessSubmit} className="w-full max-w-sm bg-white p-8 rounded-xl shadow-lg border border-amber-100 text-center">
+                    <h1 className="text-2xl font-bold text-gray-800">Accès privé</h1>
+                    <p className="mt-2 text-sm text-gray-500">Entre ton code secret pour accéder au site.</p>
+                    <input
+                        type="password"
+                        value={accessCode}
+                        onChange={(event) => setAccessCode(event.target.value)}
+                        placeholder="Code secret"
+                        autoFocus
+                        className="mt-6 w-full border-gray-300 rounded-lg border p-3 text-center focus:ring-2 focus:ring-amber-500"
+                    />
+                    {accessError && <p className="mt-3 text-sm text-red-600">{accessError}</p>}
+                    <button type="submit" className="mt-5 w-full bg-amber-500 text-white font-semibold py-3 rounded-lg hover:bg-amber-600">
+                        Entrer
+                    </button>
+                </form>
+            </div>
+        );
+    }
 
     // Chargement
     if (loading) {
