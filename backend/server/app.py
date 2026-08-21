@@ -63,6 +63,13 @@ def health_check():
     """Vérification de l'état du serveur"""
     return jsonify({'status': 'ok', 'message': 'Backend opérationnel'}), 200
 
+@app.before_request
+def protect_api_routes():
+    """Protège les données métier avec le code partagé frontend/backend."""
+    if request.path.startswith('/api/') and request.path != '/api/health':
+        if request.headers.get('X-Site-Access-Code') != app.config['SITE_ACCESS_CODE']:
+            return jsonify({'error': 'Accès non autorisé'}), 401
+
 # ---------- ROUTES PRODUITS ----------
 
 @app.route('/api/products', methods=['GET'])

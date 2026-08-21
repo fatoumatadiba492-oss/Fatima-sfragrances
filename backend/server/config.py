@@ -20,3 +20,4 @@ class Config:
     
     # Secret
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+    SITE_ACCESS_CODE = os.getenv('SITE_ACCESS_CODE', 'change-moi')

@@ -9,6 +9,13 @@ import ExpensesView from './components/ExpensesView';
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
 const API_URL = `${BACKEND_URL}/api`;
 const SITE_ACCESS_CODE = import.meta.env.VITE_SITE_ACCESS_CODE || 'change-moi';
+const apiFetch = (url, options = {}) => fetch(url, {
+    ...options,
+    headers: {
+        'X-Site-Access-Code': SITE_ACCESS_CODE,
+        ...(options.headers || {})
+    }
+});
 
 export default function App() {
     const [isAuthorized, setIsAuthorized] = useState(() => localStorage.getItem('fatima-site-authorized') === 'true');
@@ -28,23 +35,23 @@ export default function App() {
         setLoading(true);
         try {
             // Charger les produits
-            const productsRes = await fetch(`${API_URL}/products`);
+            const productsRes = await apiFetch(`${API_URL}/products`);
             if (!productsRes.ok) throw new Error('Erreur chargement produits');
             const productsData = await productsRes.json();
             setStocks(productsData);
 
             // Charger les ventes
-            const salesRes = await fetch(`${API_URL}/sales`);
+            const salesRes = await apiFetch(`${API_URL}/sales`);
             if (!salesRes.ok) throw new Error('Erreur chargement ventes');
             const salesData = await salesRes.json();
             setSales(salesData);
 
-            const creditsRes = await fetch(`${API_URL}/credits`);
+            const creditsRes = await apiFetch(`${API_URL}/credits`);
             if (!creditsRes.ok) throw new Error('Erreur chargement crédits');
             const creditsData = await creditsRes.json();
             setCredits(creditsData);
 
-            const expensesRes = await fetch(`${API_URL}/expenses`);
+            const expensesRes = await apiFetch(`${API_URL}/expenses`);
             if (!expensesRes.ok) throw new Error('Erreur chargement dépenses');
             const expensesData = await expensesRes.json();
             setExpenses(expensesData);
@@ -60,7 +67,7 @@ export default function App() {
 
     const handleAddCredit = async (newCredit) => {
         try {
-            const response = await fetch(`${API_URL}/credits`, {
+            const response = await apiFetch(`${API_URL}/credits`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -75,7 +82,7 @@ export default function App() {
             }
             const savedCredits = await response.json();
             setCredits([...savedCredits, ...credits]);
-            const productsRes = await fetch(`${API_URL}/products`);
+            const productsRes = await apiFetch(`${API_URL}/products`);
             setStocks(await productsRes.json());
             showNotification('✅ Crédit enregistré avec succès !', 'success');
             return { success: true };
@@ -88,10 +95,10 @@ export default function App() {
     const handleDeleteCredit = async (id) => {
         if (!window.confirm('Supprimer ce crédit et restaurer le stock ?')) return;
         try {
-            const response = await fetch(`${API_URL}/credits/${id}`, { method: 'DELETE' });
+            const response = await apiFetch(`${API_URL}/credits/${id}`, { method: 'DELETE' });
             if (!response.ok) throw new Error('Erreur lors de la suppression du crédit');
             setCredits(credits.filter((credit) => credit.id !== id));
-            const productsRes = await fetch(`${API_URL}/products`);
+            const productsRes = await apiFetch(`${API_URL}/products`);
             setStocks(await productsRes.json());
             showNotification('✅ Crédit supprimé !', 'success');
         } catch (err) {
@@ -101,7 +108,7 @@ export default function App() {
 
     const handleAddExpense = async (newExpense) => {
         try {
-            const response = await fetch(`${API_URL}/expenses`, {
+            const response = await apiFetch(`${API_URL}/expenses`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -117,6 +124,8 @@ export default function App() {
             }
             const savedExpense = await response.json();
             setExpenses([savedExpense, ...expenses]);
+            const productsRes = await apiFetch(`${API_URL}/products`);
+            setStocks(await productsRes.json());
             showNotification('✅ Dépense enregistrée !', 'success');
             return { success: true };
         } catch (err) {
@@ -128,7 +137,7 @@ export default function App() {
     const handleDeleteExpense = async (id) => {
         if (!window.confirm('Supprimer cette dépense ?')) return;
         try {
-            const response = await fetch(`${API_URL}/expenses/${id}`, { method: 'DELETE' });
+            const response = await apiFetch(`${API_URL}/expenses/${id}`, { method: 'DELETE' });
             if (!response.ok) throw new Error('Erreur lors de la suppression de la dépense');
             setExpenses(expenses.filter((expense) => expense.id !== id));
             showNotification('✅ Dépense supprimée !', 'success');
@@ -162,7 +171,7 @@ export default function App() {
     // Ajouter une vente
     const handleAddSale = async (newSale) => {
         try {
-            const response = await fetch(`${API_URL}/sales`, {
+            const response = await apiFetch(`${API_URL}/sales`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -182,7 +191,7 @@ export default function App() {
             setSales([savedSale, ...sales]);
             
             // Recharger les stocks
-            const productsRes = await fetch(`${API_URL}/products`);
+            const productsRes = await apiFetch(`${API_URL}/products`);
             const productsData = await productsRes.json();
             setStocks(productsData);
 
@@ -198,7 +207,7 @@ export default function App() {
     // Ajouter un produit
     const handleAddProduct = async (newProduct) => {
         try {
-            const response = await fetch(`${API_URL}/products`, {
+            const response = await apiFetch(`${API_URL}/products`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -231,7 +240,7 @@ export default function App() {
         if (!window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) return;
 
         try {
-            const response = await fetch(`${API_URL}/products/${id}`, {
+            const response = await apiFetch(`${API_URL}/products/${id}`, {
                 method: 'DELETE'
             });
 
@@ -253,7 +262,7 @@ export default function App() {
     // Mettre à jour un produit
     const handleUpdateProduct = async (id, updatedData) => {
         try {
-            const response = await fetch(`${API_URL}/products/${id}`, {
+            const response = await apiFetch(`${API_URL}/products/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
