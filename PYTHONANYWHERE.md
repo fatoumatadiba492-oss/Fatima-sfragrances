@@ -48,7 +48,7 @@ Mettre :
 DATABASE_URL=sqlite:///parfums.db
 CORS_ORIGINS=https://fatimafragrances.netlify.app,https://fatimafragrances.vercel.app
 SECRET_KEY=une-cle-secrete-longue
-SITE_ACCESS_CODE=le-meme-code-que-dans-Vercel
+ADMIN_PASSWORD=ton-mot-de-passe-secret
 ```
 
 Le fichier SQLite sera conserve sur PythonAnywhere avec le backend.

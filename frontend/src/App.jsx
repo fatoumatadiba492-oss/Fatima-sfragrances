@@ -8,17 +8,16 @@ import CreditSalesView from './components/CreditSalesView';
 import ExpensesView from './components/ExpensesView';
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
 const API_URL = `${BACKEND_URL}/api`;
-const SITE_ACCESS_CODE = import.meta.env.VITE_SITE_ACCESS_CODE || 'change-moi';
 const apiFetch = (url, options = {}) => fetch(url, {
     ...options,
     headers: {
-        'X-Site-Access-Code': SITE_ACCESS_CODE,
+        ...(localStorage.getItem('fatima-auth-token') ? { Authorization: `Bearer ${localStorage.getItem('fatima-auth-token')}` } : {}),
         ...(options.headers || {})
     }
 });
 
 export default function App() {
-    const [isAuthorized, setIsAuthorized] = useState(() => localStorage.getItem('fatima-site-authorized') === 'true');
+    const [isAuthorized, setIsAuthorized] = useState(() => Boolean(localStorage.getItem('fatima-auth-token')));
     const [accessCode, setAccessCode] = useState('');
     const [accessError, setAccessError] = useState('');
     const [activeTab, setActiveTab] = useState('dashboard');
@@ -150,14 +149,21 @@ export default function App() {
         if (isAuthorized) loadData();
     }, [isAuthorized]);
 
-    const handleAccessSubmit = (event) => {
+    const handleAccessSubmit = async (event) => {
         event.preventDefault();
-        if (accessCode === SITE_ACCESS_CODE) {
-            localStorage.setItem('fatima-site-authorized', 'true');
+        try {
+            const response = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: accessCode })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'Code incorrect.');
+            localStorage.setItem('fatima-auth-token', result.token);
             setIsAuthorized(true);
             setAccessError('');
-        } else {
-            setAccessError('Code incorrect.');
+        } catch (error) {
+            setAccessError(error.message);
             setAccessCode('');
         }
     };

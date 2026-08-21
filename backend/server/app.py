@@ -5,6 +5,7 @@ from models import db, Product, Sale, CreditSale, Expense, Settings
 from datetime import datetime, date
 import os
 from sqlalchemy import inspect, text
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 # Création de l'application
 app = Flask(__name__)
@@ -13,6 +14,7 @@ app.config.from_object(Config)
 # Initialisation des extensions
 CORS(app, origins=app.config['CORS_ORIGINS'].split(','))
 db.init_app(app)
+token_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # Création des tables
 with app.app_context():
@@ -63,12 +65,26 @@ def health_check():
     """Vérification de l'état du serveur"""
     return jsonify({'status': 'ok', 'message': 'Backend opérationnel'}), 200
 
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    data = request.get_json() or {}
+    if not app.config['ADMIN_PASSWORD']:
+        return jsonify({'error': 'ADMIN_PASSWORD non configuré sur le backend'}), 500
+    if data.get('password') != app.config['ADMIN_PASSWORD']:
+        return jsonify({'error': 'Code incorrect'}), 401
+    return jsonify({'token': token_serializer.dumps({'authenticated': True})}), 200
+
 @app.before_request
 def protect_api_routes():
-    """Protège les données métier avec le code partagé frontend/backend."""
-    if request.path.startswith('/api/') and request.path != '/api/health':
-        if request.headers.get('X-Site-Access-Code') != app.config['SITE_ACCESS_CODE']:
+    """Protège les données métier avec un jeton signé par le backend."""
+    if request.path.startswith('/api/') and request.path not in ('/api/health', '/api/auth/login'):
+        authorization = request.headers.get('Authorization', '')
+        if not authorization.startswith('Bearer '):
             return jsonify({'error': 'Accès non autorisé'}), 401
+        try:
+            token_serializer.loads(authorization[7:], max_age=86400)
+        except (BadSignature, SignatureExpired):
+            return jsonify({'error': 'Session expirée ou invalide'}), 401
 
 # ---------- ROUTES PRODUITS ----------
 
