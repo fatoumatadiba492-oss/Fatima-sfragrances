@@ -163,7 +163,10 @@ export default function App() {
             setIsAuthorized(true);
             setAccessError('');
         } catch (error) {
-            setAccessError(error.message);
+            setAccessError(error.message === 'Failed to fetch'
+                ? 'Le serveur est inaccessible. Vérifie PythonAnywhere et clique sur Reload.'
+                : error.message
+            );
             setAccessCode('');
         }
     };

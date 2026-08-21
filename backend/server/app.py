@@ -12,7 +12,12 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Initialisation des extensions
-CORS(app, origins=app.config['CORS_ORIGINS'].split(','))
+CORS(
+    app,
+    resources={r'/api/*': {'origins': '*'}},
+    allow_headers=['Content-Type', 'Authorization'],
+    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+)
 db.init_app(app)
 token_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
