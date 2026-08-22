@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from config import Config
-from models import db, Product, Sale, CreditSale, Expense, Settings
+from models import db, Product, Sale, CreditSale, Expense, CashMovement, Settings
 from datetime import datetime, date
 import os
 from sqlalchemy import inspect, text
@@ -433,6 +433,55 @@ def get_dashboard_stats():
         'todayNet': today_net,
         'lowStock': len(low_stock),
         'lowStockItems': [p.name for p in low_stock]
+    }), 200
+
+# ---------- ROUTES CAISSE ----------
+
+@app.route('/api/cash', methods=['GET'])
+def get_cash_movements():
+    movements = CashMovement.query.order_by(CashMovement.movement_date.desc(), CashMovement.id.desc()).all()
+    return jsonify([m.to_dict() for m in movements]), 200
+
+@app.route('/api/cash', methods=['POST'])
+def create_cash_movement():
+    data = request.get_json() or {}
+    movement_type = data.get('type')
+    amount = data.get('amount')
+    description = data.get('description', '').strip()
+    movement_date = data.get('date')
+    if movement_type not in ('entry', 'exit') or not amount or not description or not movement_date:
+        return jsonify({'error': 'Type, montant, description et date requis'}), 400
+    movement = CashMovement(
+        movement_type=movement_type,
+        amount=float(amount),
+        description=description,
+        movement_date=datetime.strptime(movement_date, '%Y-%m-%d').date()
+    )
+    db.session.add(movement)
+    db.session.commit()
+    return jsonify(movement.to_dict()), 201
+
+@app.route('/api/cash/<int:movement_id>', methods=['DELETE'])
+def delete_cash_movement(movement_id):
+    movement = CashMovement.query.get_or_404(movement_id)
+    db.session.delete(movement)
+    db.session.commit()
+    return jsonify({'message': 'Mouvement supprimé'}), 200
+
+@app.route('/api/cash/balance', methods=['GET'])
+def get_cash_balance():
+    """Solde de caisse = ventes encaissées + entrées - sorties - réapprovisionnements"""
+    sales_total = db.session.query(db.func.coalesce(db.func.sum(Sale.amount), 0)).scalar()
+    entries = db.session.query(db.func.coalesce(db.func.sum(CashMovement.amount), 0)).filter(CashMovement.movement_type == 'entry').scalar()
+    exits = db.session.query(db.func.coalesce(db.func.sum(CashMovement.amount), 0)).filter(CashMovement.movement_type == 'exit').scalar()
+    expenses_total = db.session.query(db.func.coalesce(db.func.sum(Expense.amount), 0)).scalar()
+    balance = float(sales_total) + float(entries) - float(exits) - float(expenses_total)
+    return jsonify({
+        'balance': balance,
+        'salesTotal': float(sales_total),
+        'entries': float(entries),
+        'exits': float(exits),
+        'expensesTotal': float(expenses_total)
     }), 200
 
 # ---------- ROUTES PARAMÈTRES ----------

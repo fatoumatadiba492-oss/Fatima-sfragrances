@@ -116,6 +116,26 @@ class Expense(db.Model):
             'date': self.expense_date.strftime('%Y-%m-%d')
         }
 
+class CashMovement(db.Model):
+    """Modèle pour les mouvements de caisse"""
+    __tablename__ = 'cash_movements'
+
+    id = db.Column(db.Integer, primary_key=True)
+    movement_type = db.Column(db.String(10), nullable=False)  # 'entry' or 'exit'
+    amount = db.Column(db.Float, nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+    movement_date = db.Column(db.Date, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'type': self.movement_type,
+            'amount': self.amount,
+            'description': self.description,
+            'date': self.movement_date.strftime('%Y-%m-%d')
+        }
+
 class Settings(db.Model):
     """Modèle pour les paramètres"""
     __tablename__ = 'settings'

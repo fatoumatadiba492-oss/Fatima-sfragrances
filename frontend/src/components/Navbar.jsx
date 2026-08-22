@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Settings, LayoutDashboard, Sparkles, CreditCard, Receipt, ShoppingBag, BarChart3 } from 'lucide-react';
+import { Menu, X, Settings, LayoutDashboard, Sparkles, CreditCard, Receipt, ShoppingBag, BarChart3, Wallet } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -10,6 +10,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
         { id: 'history', label: 'Historique & Épargne', icon: BarChart3 },
         { id: 'credits', label: 'Ventes à crédit', icon: CreditCard },
         { id: 'expenses', label: 'Réapprovisionnement', icon: Receipt },
+        { id: 'cash', label: 'Caisse', icon: Wallet },
         { id: 'settings', label: 'Paramètres & Stocks', icon: Settings },
     ];
 
