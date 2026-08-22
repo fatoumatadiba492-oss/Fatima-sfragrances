@@ -8,17 +8,28 @@ export default function SalesHistoryView({ sales, onDeleteSale, onUpdateSale }) 
     const formatCurrency = (value) => new Intl.NumberFormat('fr-FR').format(value) + ' CFA';
 
     const startEdit = (sale) => {
+        const unitPrice = sale.quantity > 0 ? sale.amount / sale.quantity : 0;
         setEditingId(sale.id);
         setEditData({
             quantity: sale.quantity,
+            unitPrice,
             amount: sale.amount,
             expense: sale.expense || 0
         });
     };
 
+    const handleQuantityChange = (newQty) => {
+        const qty = Number(newQty) || 0;
+        setEditData(prev => ({
+            ...prev,
+            quantity: newQty,
+            amount: Math.round(qty * prev.unitPrice)
+        }));
+    };
+
     const cancelEdit = () => {
         setEditingId(null);
-        setEditData({ quantity: '', amount: '', expense: '' });
+        setEditData({ quantity: '', unitPrice: 0, amount: '', expense: '' });
     };
 
     const submitEdit = async (id) => {
@@ -74,7 +85,7 @@ export default function SalesHistoryView({ sales, onDeleteSale, onUpdateSale }) 
                                                     type="number"
                                                     min="1"
                                                     value={editData.quantity}
-                                                    onChange={(e) => setEditData({...editData, quantity: e.target.value})}
+                                                    onChange={(e) => handleQuantityChange(e.target.value)}
                                                     className="w-16 border border-gray-300 rounded px-2 py-1 text-center"
                                                 />
                                             </td>
