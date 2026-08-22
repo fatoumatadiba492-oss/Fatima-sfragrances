@@ -225,8 +225,9 @@ def delete_sale(sale_id):
     # Restaurer le stock
     product = Product.query.get(sale.product_id)
     if product:
-        product.sold -= sale.quantity
         product.remaining_stock += sale.quantity
+        product.sold = max(0, product.sold - sale.quantity)
+        product.initial_stock = product.remaining_stock + product.sold
     
     db.session.delete(sale)
     db.session.commit()
@@ -249,7 +250,8 @@ def update_sale(sale_id):
         if diff < 0 and abs(diff) > product.remaining_stock:
             return jsonify({'error': f'Stock insuffisant. Restant: {product.remaining_stock}'}), 400
         product.remaining_stock += diff
-        product.sold -= diff
+        product.sold = max(0, product.sold - diff)
+        product.initial_stock = product.remaining_stock + product.sold
 
     sale.quantity = new_quantity
     sale.amount = new_amount
