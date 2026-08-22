@@ -7,6 +7,7 @@ import SettingsView from './components/SettingsView';
 import CreditSalesView from './components/CreditSalesView';
 import ExpensesView from './components/ExpensesView';
 import SalesHistoryView from './components/SalesHistoryView';
+import HistoryView from './components/HistoryView';
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
 const API_URL = `${BACKEND_URL}/api`;
 const apiFetch = (url, options = {}) => fetch(url, {
@@ -453,6 +454,12 @@ export default function App() {
                         sales={sales}
                         onDeleteSale={handleDeleteSale}
                         onUpdateSale={handleUpdateSale}
+                    />
+                ) : activeTab === 'history' ? (
+                    <HistoryView
+                        sales={sales}
+                        expenses={expenses}
+                        stocks={stocks}
                     />
                 ) : activeTab === 'credits' ? (
                     <CreditSalesView
