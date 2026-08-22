@@ -362,6 +362,27 @@ export default function App() {
         }
     };
 
+    const handleResetAll = async () => {
+        const input = window.prompt('Pour confirmer la suppression de TOUTES les données, tapez RESET :');
+        if (input !== 'RESET') return;
+        try {
+            const response = await apiFetch(`${API_URL}/reset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ confirm: 'RESET' })
+            });
+            if (!response.ok) throw new Error('Erreur lors de la réinitialisation');
+            setSales([]);
+            setStocks([]);
+            setCredits([]);
+            setExpenses([]);
+            showNotification('Toutes les données ont été supprimées', 'success');
+            setActiveTab('dashboard');
+        } catch (err) {
+            showNotification(err.message, 'error');
+        }
+    };
+
     if (!isAuthorized) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-orange-50 px-4">
@@ -443,12 +464,13 @@ export default function App() {
                         </div>
                     </div>
                 ) : activeTab === 'settings' ? (
-                    <SettingsView 
-                        stocks={stocks} 
+                    <SettingsView
+                        stocks={stocks}
                         setStocks={setStocks}
                         onAddProduct={handleAddProduct}
                         onDeleteProduct={handleDeleteProduct}
                         onUpdateProduct={handleUpdateProduct}
+                        onResetAll={handleResetAll}
                     />
                 ) : activeTab === 'sales' ? (
                     <SalesHistoryView

@@ -4,12 +4,13 @@ import {
     Package, TrendingUp, AlertCircle, CheckCircle
 } from 'lucide-react';
 
-export default function SettingsView({ 
-    stocks, 
+export default function SettingsView({
+    stocks,
     setStocks,
     onAddProduct,
     onDeleteProduct,
-    onUpdateProduct 
+    onUpdateProduct,
+    onResetAll
 }) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -334,6 +335,24 @@ export default function SettingsView({
                             )}
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            {/* Zone dangereuse - Reset */}
+            <div className="bg-white rounded-xl shadow-sm border-2 border-red-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-red-100 bg-red-50">
+                    <h3 className="font-semibold text-red-700">Zone dangereuse</h3>
+                </div>
+                <div className="p-6">
+                    <p className="text-sm text-gray-600 mb-4">
+                        Supprimer <strong>toutes</strong> les données : ventes, crédits, réapprovisionnements, mouvements de caisse et produits. Cette action est irréversible.
+                    </p>
+                    <button
+                        onClick={onResetAll}
+                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold"
+                    >
+                        Réinitialiser toutes les données
+                    </button>
                 </div>
             </div>
         </div>

@@ -506,6 +506,22 @@ def update_setting(key):
     db.session.commit()
     return jsonify(setting.to_dict()), 200
 
+# ---------- RESET COMPLET ----------
+
+@app.route('/api/reset', methods=['POST'])
+def reset_all_data():
+    """Supprimer TOUTES les données : ventes, crédits, dépenses, mouvements de caisse, produits"""
+    data = request.get_json() or {}
+    if data.get('confirm') != 'RESET':
+        return jsonify({'error': 'Envoyez {"confirm": "RESET"} pour confirmer'}), 400
+    CashMovement.query.delete()
+    Sale.query.delete()
+    CreditSale.query.delete()
+    Expense.query.delete()
+    Product.query.delete()
+    db.session.commit()
+    return jsonify({'message': 'Toutes les données ont été supprimées'}), 200
+
 # ==================== DÉMARRAGE ====================
 
 if __name__ == '__main__':
