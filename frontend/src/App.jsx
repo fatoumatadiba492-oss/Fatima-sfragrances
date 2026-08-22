@@ -320,6 +320,7 @@ export default function App() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: updatedData.product,
+                    sold: Number(updatedData.sold || 0),
                     initial_stock: Number(updatedData.initial),
                     purchase_price: Number(updatedData.purchasePrice),
                     sale_price: Number(updatedData.salePrice),

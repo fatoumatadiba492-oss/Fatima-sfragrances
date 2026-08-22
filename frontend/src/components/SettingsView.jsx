@@ -52,6 +52,7 @@ export default function SettingsView({
         setFormData({
             product: product.product,
             initial: product.initial,
+            sold: product.sold || 0,
             purchasePrice: product.purchasePrice || '',
             salePrice: product.salePrice || '',
             nextOrder: product.nextOrder
@@ -244,8 +245,18 @@ export default function SettingsView({
                                             </td>
                                             <td className="p-3 text-center text-gray-400">Calculé</td>
                                             <td className="p-3 text-center text-gray-400">Calculé</td>
-                                            <td className="p-3 text-center text-red-500 font-semibold">{item.sold}</td>
-                                            <td className="p-3 text-center font-bold">{item.remaining}</td>
+                                            <td className="p-3 text-center">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={formData.sold}
+                                                    onChange={(e) => setFormData({...formData, sold: e.target.value})}
+                                                    className="w-16 border-gray-300 rounded border p-1.5 text-center"
+                                                />
+                                            </td>
+                                            <td className="p-3 text-center font-bold text-blue-600">
+                                                {Number(formData.initial || 0) - Number(formData.sold || 0)}
+                                            </td>
                                             <td className="p-3">
                                                 <input
                                                     type="date"

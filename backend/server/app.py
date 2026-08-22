@@ -140,17 +140,18 @@ def update_product(product_id):
     
     if 'name' in data:
         product.name = data['name']
+    if 'sold' in data:
+        product.sold = int(data['sold'])
     if 'initial_stock' in data:
-        diff = int(data['initial_stock']) - product.initial_stock
         product.initial_stock = int(data['initial_stock'])
-        product.remaining_stock += diff
+        product.remaining_stock = product.initial_stock - product.sold
     if 'purchase_price' in data:
         product.purchase_price = float(data['purchase_price'])
     if 'sale_price' in data:
         product.sale_price = float(data['sale_price'])
     if 'next_order_date' in data:
         product.next_order_date = datetime.strptime(data['next_order_date'], '%Y-%m-%d').date()
-    
+
     db.session.commit()
     return jsonify(product.to_dict()), 200
 
