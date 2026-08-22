@@ -100,9 +100,23 @@ export default function App() {
             setCredits(credits.filter((credit) => credit.id !== id));
             const productsRes = await apiFetch(`${API_URL}/products`);
             setStocks(await productsRes.json());
-            showNotification('✅ Crédit supprimé !', 'success');
+            showNotification('Crédit supprimé et stock restauré', 'success');
         } catch (err) {
-            showNotification('❌ ' + err.message, 'error');
+            showNotification(err.message, 'error');
+        }
+    };
+
+    const handlePayCredit = async (id) => {
+        if (!window.confirm('Confirmer le paiement ? Le crédit sera converti en vente.')) return;
+        try {
+            const response = await apiFetch(`${API_URL}/credits/${id}/pay`, { method: 'POST' });
+            if (!response.ok) throw new Error('Erreur lors du paiement');
+            const newSale = await response.json();
+            setSales([newSale, ...sales]);
+            setCredits(credits.filter((credit) => credit.id !== id));
+            showNotification('Paiement enregistré ! Crédit converti en vente.', 'success');
+        } catch (err) {
+            showNotification(err.message, 'error');
         }
     };
 
@@ -446,6 +460,7 @@ export default function App() {
                         credits={credits}
                         onAddCredit={handleAddCredit}
                         onDeleteCredit={handleDeleteCredit}
+                        onPayCredit={handlePayCredit}
                     />
                 ) : (
                     <ExpensesView

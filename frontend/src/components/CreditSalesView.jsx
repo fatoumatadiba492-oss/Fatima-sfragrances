@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { CreditCard, Plus, Trash2, AlertCircle, X } from 'lucide-react';
+import { useState } from 'react';
+import { CreditCard, Plus, Trash2, AlertCircle, X, CheckCircle } from 'lucide-react';
 
 const newItem = { productId: '', quantity: '', unitPrice: '' };
 const initialForm = {
@@ -8,7 +8,7 @@ const initialForm = {
     items: [{ ...newItem }]
 };
 
-export default function CreditSalesView({ stocks, credits, onAddCredit, onDeleteCredit }) {
+export default function CreditSalesView({ stocks, credits, onAddCredit, onDeleteCredit, onPayCredit }) {
     const [formData, setFormData] = useState(initialForm);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -105,7 +105,7 @@ export default function CreditSalesView({ stocks, credits, onAddCredit, onDelete
             <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between"><h3 className="font-semibold text-gray-700">Clients à crédit</h3><span className="text-sm font-semibold text-orange-700">Total à recouvrer : {formatCurrency(credits.reduce((sum, credit) => sum + credit.totalAmount, 0))}</span></div>
                 <div className="overflow-x-auto"><table className="w-full text-left border-collapse"><thead><tr className="bg-gray-50 border-b border-gray-200"><th className="p-3 text-xs font-semibold text-gray-600 uppercase">Client</th><th className="p-3 text-xs font-semibold text-gray-600 uppercase">Produit</th><th className="p-3 text-xs font-semibold text-gray-600 uppercase text-center">Quantité</th><th className="p-3 text-xs font-semibold text-gray-600 uppercase text-center">Prix unitaire</th><th className="p-3 text-xs font-semibold text-gray-600 uppercase text-center">Prix total</th><th className="p-3 text-xs font-semibold text-gray-600 uppercase">Date</th><th className="p-3 text-xs font-semibold text-gray-600 uppercase text-center">Action</th></tr></thead><tbody className="divide-y divide-gray-100">
-                    {credits.map((credit) => <tr key={credit.id} className="hover:bg-gray-50"><td className="p-3 font-medium text-gray-800">{credit.customerName}</td><td className="p-3 text-gray-600">{credit.product}</td><td className="p-3 text-center">{credit.quantity}</td><td className="p-3 text-center">{formatCurrency(credit.unitPrice)}</td><td className="p-3 text-center font-semibold text-orange-700">{formatCurrency(credit.totalAmount)}</td><td className="p-3 text-gray-500">{credit.date}</td><td className="p-3 text-center"><button onClick={() => onDeleteCredit(credit.id)} className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600" title="Supprimer le crédit"><Trash2 className="w-4 h-4" /></button></td></tr>)}
+                    {credits.map((credit) => <tr key={credit.id} className="hover:bg-gray-50"><td className="p-3 font-medium text-gray-800">{credit.customerName}</td><td className="p-3 text-gray-600">{credit.product}</td><td className="p-3 text-center">{credit.quantity}</td><td className="p-3 text-center">{formatCurrency(credit.unitPrice)}</td><td className="p-3 text-center font-semibold text-orange-700">{formatCurrency(credit.totalAmount)}</td><td className="p-3 text-gray-500">{credit.date}</td><td className="p-3 text-center"><div className="flex justify-center gap-2"><button onClick={() => onPayCredit(credit.id)} className="p-1.5 bg-green-500 text-white rounded hover:bg-green-600" title="Marquer comme payé"><CheckCircle className="w-4 h-4" /></button><button onClick={() => onDeleteCredit(credit.id)} className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600" title="Supprimer le crédit"><Trash2 className="w-4 h-4" /></button></div></td></tr>)}
                     {credits.length === 0 && <tr><td colSpan="7" className="p-8 text-center text-gray-400">Aucun crédit enregistré</td></tr>}
                 </tbody></table></div>
             </section>

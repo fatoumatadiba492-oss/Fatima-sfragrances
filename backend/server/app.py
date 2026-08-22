@@ -327,6 +327,22 @@ def delete_credit(credit_id):
     db.session.commit()
     return jsonify({'message': 'Crédit supprimé et stock restauré'}), 200
 
+@app.route('/api/credits/<int:credit_id>/pay', methods=['POST'])
+def mark_credit_paid(credit_id):
+    """Marquer un crédit comme payé : crée une vente et supprime le crédit"""
+    credit = CreditSale.query.get_or_404(credit_id)
+    sale = Sale(
+        product_id=credit.product_id,
+        quantity=credit.quantity,
+        amount=credit.total_amount,
+        expense=0,
+        net_amount=credit.total_amount
+    )
+    db.session.add(sale)
+    db.session.delete(credit)
+    db.session.commit()
+    return jsonify(sale.to_dict()), 200
+
 # ---------- ROUTES DÉPENSES ----------
 
 @app.route('/api/expenses', methods=['GET'])
