@@ -82,6 +82,8 @@ def login():
 @app.before_request
 def protect_api_routes():
     """Protège les données métier avec un jeton signé par le backend."""
+    if request.method == 'OPTIONS':
+        return
     if request.path.startswith('/api/') and request.path not in ('/api/health', '/api/auth/login'):
         authorization = request.headers.get('Authorization', '')
         if not authorization.startswith('Bearer '):
