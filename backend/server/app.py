@@ -321,17 +321,22 @@ def create_expense():
     if quantity <= 0 or unit_price <= 0:
         return jsonify({'error': 'Quantité ou prix unitaire invalide'}), 400
     amount = quantity * unit_price
+    restock_date = datetime.strptime(data['expense_date'], '%Y-%m-%d').date()
+    was_out_of_stock = product.remaining_stock == 0
     expense = Expense(
         description=f'Restock de {product.name}',
         amount=amount,
-        expense_date=datetime.strptime(data['expense_date'], '%Y-%m-%d').date(),
+        expense_date=restock_date,
         product_id=product.id,
         quantity=quantity,
         unit_price=unit_price
     )
-    product.initial_stock += quantity
     product.remaining_stock += quantity
+    product.initial_stock = product.remaining_stock
+    product.sold = 0
     product.purchase_price = unit_price
+    if was_out_of_stock:
+        product.next_order_date = restock_date
     db.session.add(expense)
     db.session.commit()
     return jsonify(expense.to_dict()), 201
@@ -342,8 +347,8 @@ def delete_expense(expense_id):
     if expense.product_id and expense.quantity:
         product = Product.query.get(expense.product_id)
         if product:
-            product.initial_stock -= expense.quantity
             product.remaining_stock -= expense.quantity
+            product.initial_stock = product.remaining_stock + product.sold
     db.session.delete(expense)
     db.session.commit()
     return jsonify({'message': 'Dépense supprimée'}), 200
