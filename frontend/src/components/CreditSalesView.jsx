@@ -85,7 +85,7 @@ export default function CreditSalesView({ stocks, credits, onAddCredit, onDelete
                             return <div key={index} className="grid grid-cols-1 sm:grid-cols-5 gap-3 items-center bg-amber-50 p-3 rounded-lg border border-amber-100">
                                 <select value={item.productId} onChange={(event) => handleProductChange(index, event.target.value)} className="border-gray-300 rounded-lg border p-2.5 focus:ring-2 focus:ring-amber-500">
                                     <option value="">Choisir un produit</option>
-                                    {stocks.map((stock) => <option key={stock.id} value={stock.id}>{stock.product} ({stock.remaining} restant(s))</option>)}
+                                    {stocks.filter(stock => stock.remaining > 0).map((stock) => <option key={stock.id} value={stock.id}>{stock.product} ({stock.remaining} restant(s))</option>)}
                                 </select>
                                 <input type="number" min="1" placeholder="Quantité" value={item.quantity} onChange={(event) => updateItem(index, { quantity: event.target.value })} className="border-gray-300 rounded-lg border p-2.5 focus:ring-2 focus:ring-amber-500" />
                                 <input type="number" min="0" placeholder="Prix unitaire" value={item.unitPrice} onChange={(event) => updateItem(index, { unitPrice: event.target.value })} className="border-gray-300 rounded-lg border p-2.5 focus:ring-2 focus:ring-amber-500" />

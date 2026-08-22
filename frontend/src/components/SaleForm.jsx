@@ -17,8 +17,9 @@ export default function SaleForm({ stocks, onAddSale }) {
     const totalAmount = Number(newSale.quantity || 0) * Number(newSale.unitPrice || 0);
 
     useEffect(() => {
-        if (stocks[0] && !newSale.productId) {
-            setNewSale((sale) => ({ ...sale, productId: stocks[0].id, unitPrice: stocks[0].salePrice || '' }));
+        const available = stocks.find(s => s.remaining > 0);
+        if (available && !newSale.productId) {
+            setNewSale((sale) => ({ ...sale, productId: available.id, unitPrice: available.salePrice || '' }));
         }
     }, [stocks, newSale.productId]);
 
@@ -128,7 +129,7 @@ export default function SaleForm({ stocks, onAddSale }) {
                                 }}
                                 className="w-full border-gray-300 rounded-lg border p-2.5 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
                             >
-                                {stocks.map(s => (
+                                {stocks.filter(s => s.remaining > 0).map(s => (
                                     <option key={s.id} value={s.id}>
                                         {s.product} ({s.remaining} restants)
                                     </option>
