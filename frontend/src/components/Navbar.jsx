@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Menu, X, Settings, LayoutDashboard, Sparkles, CreditCard, Receipt } from 'lucide-react';
+import { Menu, X, Settings, LayoutDashboard, Sparkles, CreditCard, Receipt, ShoppingBag } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
         { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+        { id: 'sales', label: 'Ventes', icon: ShoppingBag },
         { id: 'settings', label: 'Paramètres & Stocks', icon: Settings },
         { id: 'credits', label: 'Ventes à crédit', icon: CreditCard },
         { id: 'expenses', label: 'Réapprovisionnement', icon: Receipt }

@@ -6,6 +6,7 @@ import StockTable from './components/StockTable';
 import SettingsView from './components/SettingsView';
 import CreditSalesView from './components/CreditSalesView';
 import ExpensesView from './components/ExpensesView';
+import SalesHistoryView from './components/SalesHistoryView';
 const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://fdiba23.pythonanywhere.com').replace(/\/$/, '');
 const API_URL = `${BACKEND_URL}/api`;
 const apiFetch = (url, options = {}) => fetch(url, {
@@ -213,6 +214,25 @@ export default function App() {
         }
     };
 
+    // Supprimer une vente (remboursement)
+    const handleDeleteSale = async (id) => {
+        if (!window.confirm('Annuler cette vente et rembourser le client ? Le stock sera restauré.')) return;
+        try {
+            const response = await apiFetch(`${API_URL}/sales/${id}`, { method: 'DELETE' });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Erreur lors de la suppression');
+            }
+            setSales(sales.filter(s => s.id !== id));
+            const productsRes = await apiFetch(`${API_URL}/products`);
+            const productsData = await productsRes.json();
+            setStocks(productsData);
+            showNotification('Vente annulée et stock restauré', 'success');
+        } catch (err) {
+            showNotification(err.message, 'error');
+        }
+    };
+
     // Ajouter un produit
     const handleAddProduct = async (newProduct) => {
         try {
@@ -388,6 +408,11 @@ export default function App() {
                         onAddProduct={handleAddProduct}
                         onDeleteProduct={handleDeleteProduct}
                         onUpdateProduct={handleUpdateProduct}
+                    />
+                ) : activeTab === 'sales' ? (
+                    <SalesHistoryView
+                        sales={sales}
+                        onDeleteSale={handleDeleteSale}
                     />
                 ) : activeTab === 'credits' ? (
                     <CreditSalesView
