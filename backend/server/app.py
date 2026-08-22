@@ -347,8 +347,11 @@ def delete_expense(expense_id):
     if expense.product_id and expense.quantity:
         product = Product.query.get(expense.product_id)
         if product:
+            if product.remaining_stock < expense.quantity:
+                return jsonify({'error': f'Impossible de supprimer : des articles de ce réapprovisionnement ont déjà été vendus. Stock restant ({product.remaining_stock}) < quantité réapprovisionnée ({expense.quantity})'}), 400
             product.remaining_stock -= expense.quantity
-            product.initial_stock = product.remaining_stock + product.sold
+            product.initial_stock = product.remaining_stock
+            product.sold = 0
     db.session.delete(expense)
     db.session.commit()
     return jsonify({'message': 'Dépense supprimée'}), 200
