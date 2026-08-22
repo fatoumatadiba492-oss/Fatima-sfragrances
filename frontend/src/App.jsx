@@ -452,6 +452,7 @@ export default function App() {
                 ) : activeTab === 'sales' ? (
                     <SalesHistoryView
                         sales={sales}
+                        stocks={stocks}
                         onDeleteSale={handleDeleteSale}
                         onUpdateSale={handleUpdateSale}
                     />

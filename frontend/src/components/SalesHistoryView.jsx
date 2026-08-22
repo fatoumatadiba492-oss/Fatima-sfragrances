@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { ShoppingBag, Trash2, Edit, Save, X, Package } from 'lucide-react';
 
-export default function SalesHistoryView({ sales, onDeleteSale, onUpdateSale }) {
+export default function SalesHistoryView({ sales, stocks, onDeleteSale, onUpdateSale }) {
     const [editingId, setEditingId] = useState(null);
     const [editData, setEditData] = useState({ quantity: '', amount: '', expense: '' });
 
     const formatCurrency = (value) => new Intl.NumberFormat('fr-FR').format(value) + ' CFA';
 
     const startEdit = (sale) => {
-        const unitPrice = sale.quantity > 0 ? sale.amount / sale.quantity : 0;
+        const product = stocks.find(s => s.product === sale.product);
+        const unitPrice = product?.salePrice || (sale.quantity > 0 ? sale.amount / sale.quantity : 0);
         setEditingId(sale.id);
         setEditData({
             quantity: sale.quantity,
             unitPrice,
-            amount: sale.amount,
+            amount: Math.round(sale.quantity * unitPrice),
             expense: sale.expense || 0
         });
     };
