@@ -73,20 +73,28 @@ export default function SalesHistoryView({ sales, stocks, onDeleteSale, onUpdate
                                     {editingId === sale.id ? (
                                         <>
                                             <td className="p-3 text-center">
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    value={editData.quantity}
-                                                    onChange={(e) => {
-                                                        const qty = Number(e.target.value) || 0;
-                                                        setEditData(prev => ({
-                                                            ...prev,
-                                                            quantity: e.target.value,
-                                                            amount: Math.round(qty * prev.unitPrice)
-                                                        }));
-                                                    }}
-                                                    className="w-16 border border-amber-400 rounded px-2 py-1 text-center bg-amber-50"
-                                                />
+                                                {(() => {
+                                                    const product = stocks.find(s => s.product === sale.product);
+                                                    const maxQty = sale.quantity + (product?.remaining || 0);
+                                                    return (
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            max={maxQty}
+                                                            value={editData.quantity}
+                                                            onChange={(e) => {
+                                                                const val = Math.min(Number(e.target.value) || 0, maxQty);
+                                                                const qty = val > 0 ? val : Number(e.target.value) || 0;
+                                                                setEditData(prev => ({
+                                                                    ...prev,
+                                                                    quantity: val > 0 ? val : e.target.value,
+                                                                    amount: Math.round(qty * prev.unitPrice)
+                                                                }));
+                                                            }}
+                                                            className="w-16 border border-amber-400 rounded px-2 py-1 text-center bg-amber-50"
+                                                        />
+                                                    );
+                                                })()}
                                             </td>
                                             <td className="p-3 text-right font-semibold text-gray-700">
                                                 {formatCurrency(editData.amount)}
