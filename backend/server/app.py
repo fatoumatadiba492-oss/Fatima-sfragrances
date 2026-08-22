@@ -156,11 +156,15 @@ def update_product(product_id):
 
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
-    """Supprimer un produit"""
+    """Supprimer un produit et ses données associées"""
     product = Product.query.get_or_404(product_id)
+    purchase_total = product.initial_stock * product.purchase_price
+    Sale.query.filter_by(product_id=product_id).delete()
+    CreditSale.query.filter_by(product_id=product_id).delete()
+    Expense.query.filter_by(product_id=product_id).delete()
     db.session.delete(product)
     db.session.commit()
-    return jsonify({'message': 'Produit supprimé'}), 200
+    return jsonify({'message': 'Produit supprimé', 'purchaseTotal': purchase_total}), 200
 
 # ---------- ROUTES VENTES ----------
 
