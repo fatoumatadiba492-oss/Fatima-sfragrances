@@ -140,13 +140,16 @@ export default function SaleForm({ stocks, onAddSale }) {
                             <label className="block text-sm font-medium text-gray-700 mb-1.5">
                                 Quantité vendue
                             </label>
-                            <input 
-                                type="number" 
-                                min="1" 
+                            <input
+                                type="number"
+                                min="1"
                                 max={currentStock}
-                                placeholder="Ex: 2"
+                                placeholder={currentStock === 1 ? '1' : `Max: ${currentStock}`}
                                 value={newSale.quantity}
-                                onChange={(e) => setNewSale({...newSale, quantity: e.target.value})}
+                                onChange={(e) => {
+                                    const val = Math.min(Number(e.target.value), currentStock);
+                                    setNewSale({...newSale, quantity: val > 0 ? val : e.target.value});
+                                }}
                                 className="w-full border-gray-300 rounded-lg border p-2.5 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
                                 required
                             />
