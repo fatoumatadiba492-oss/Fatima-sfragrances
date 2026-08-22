@@ -1,8 +1,36 @@
-import React from 'react';
-import { ShoppingBag, Trash2, Package } from 'lucide-react';
+import { useState } from 'react';
+import { ShoppingBag, Trash2, Edit, Save, X, Package } from 'lucide-react';
 
-export default function SalesHistoryView({ sales, onDeleteSale }) {
+export default function SalesHistoryView({ sales, onDeleteSale, onUpdateSale }) {
+    const [editingId, setEditingId] = useState(null);
+    const [editData, setEditData] = useState({ quantity: '', amount: '', expense: '' });
+
     const formatCurrency = (value) => new Intl.NumberFormat('fr-FR').format(value) + ' CFA';
+
+    const startEdit = (sale) => {
+        setEditingId(sale.id);
+        setEditData({
+            quantity: sale.quantity,
+            amount: sale.amount,
+            expense: sale.expense || 0
+        });
+    };
+
+    const cancelEdit = () => {
+        setEditingId(null);
+        setEditData({ quantity: '', amount: '', expense: '' });
+    };
+
+    const submitEdit = async (id) => {
+        const result = await onUpdateSale(id, {
+            quantity: Number(editData.quantity),
+            amount: Number(editData.amount),
+            expense: Number(editData.expense || 0)
+        });
+        if (result.success) {
+            setEditingId(null);
+        }
+    };
 
     return (
         <section className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -23,7 +51,7 @@ export default function SalesHistoryView({ sales, onDeleteSale }) {
                             <th className="p-3 text-xs font-semibold text-gray-600 uppercase text-right">Montant</th>
                             <th className="p-3 text-xs font-semibold text-gray-600 uppercase text-right">Dépenses</th>
                             <th className="p-3 text-xs font-semibold text-gray-600 uppercase text-right">Net</th>
-                            <th className="p-3 text-xs font-semibold text-gray-600 uppercase text-center">Action</th>
+                            <th className="p-3 text-xs font-semibold text-gray-600 uppercase text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -39,19 +67,83 @@ export default function SalesHistoryView({ sales, onDeleteSale }) {
                                 <tr key={sale.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="p-3 text-sm text-gray-600">{sale.date} {sale.time}</td>
                                     <td className="p-3 font-medium text-gray-800">{sale.product}</td>
-                                    <td className="p-3 text-center text-gray-700">{sale.quantity}</td>
-                                    <td className="p-3 text-right text-gray-700">{formatCurrency(sale.amount)}</td>
-                                    <td className="p-3 text-right text-red-500">{sale.expense > 0 ? `-${formatCurrency(sale.expense)}` : '-'}</td>
-                                    <td className="p-3 text-right font-semibold text-green-600">{formatCurrency(sale.net)}</td>
-                                    <td className="p-3 text-center">
-                                        <button
-                                            onClick={() => onDeleteSale(sale.id)}
-                                            className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                                            title="Rembourser / Annuler cette vente"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </td>
+                                    {editingId === sale.id ? (
+                                        <>
+                                            <td className="p-3 text-center">
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    value={editData.quantity}
+                                                    onChange={(e) => setEditData({...editData, quantity: e.target.value})}
+                                                    className="w-16 border border-gray-300 rounded px-2 py-1 text-center"
+                                                />
+                                            </td>
+                                            <td className="p-3 text-right">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={editData.amount}
+                                                    onChange={(e) => setEditData({...editData, amount: e.target.value})}
+                                                    className="w-24 border border-gray-300 rounded px-2 py-1 text-right"
+                                                />
+                                            </td>
+                                            <td className="p-3 text-right">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={editData.expense}
+                                                    onChange={(e) => setEditData({...editData, expense: e.target.value})}
+                                                    className="w-20 border border-gray-300 rounded px-2 py-1 text-right"
+                                                />
+                                            </td>
+                                            <td className="p-3 text-right font-semibold text-green-600">
+                                                {formatCurrency(Number(editData.amount || 0) - Number(editData.expense || 0))}
+                                            </td>
+                                            <td className="p-3 text-center">
+                                                <div className="flex justify-center gap-2">
+                                                    <button
+                                                        onClick={() => submitEdit(sale.id)}
+                                                        className="p-1.5 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                                        title="Enregistrer"
+                                                    >
+                                                        <Save className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={cancelEdit}
+                                                        className="p-1.5 bg-gray-400 text-white rounded hover:bg-gray-500 transition-colors"
+                                                        title="Annuler"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td className="p-3 text-center text-gray-700">{sale.quantity}</td>
+                                            <td className="p-3 text-right text-gray-700">{formatCurrency(sale.amount)}</td>
+                                            <td className="p-3 text-right text-red-500">{sale.expense > 0 ? `-${formatCurrency(sale.expense)}` : '-'}</td>
+                                            <td className="p-3 text-right font-semibold text-green-600">{formatCurrency(sale.net)}</td>
+                                            <td className="p-3 text-center">
+                                                <div className="flex justify-center gap-2">
+                                                    <button
+                                                        onClick={() => startEdit(sale)}
+                                                        className="p-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                                                        title="Modifier cette vente"
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => onDeleteSale(sale.id)}
+                                                        className="p-1.5 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                                                        title="Rembourser / Annuler cette vente"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </>
+                                    )}
                                 </tr>
                             ))
                         )}

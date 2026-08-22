@@ -214,6 +214,30 @@ export default function App() {
         }
     };
 
+    // Modifier une vente
+    const handleUpdateSale = async (id, updatedData) => {
+        try {
+            const response = await apiFetch(`${API_URL}/sales/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Erreur lors de la modification');
+            }
+            const updatedSale = await response.json();
+            setSales(sales.map(s => s.id === id ? updatedSale : s));
+            const productsRes = await apiFetch(`${API_URL}/products`);
+            setStocks(await productsRes.json());
+            showNotification('Vente modifiée avec succès', 'success');
+            return { success: true };
+        } catch (err) {
+            showNotification(err.message, 'error');
+            return { success: false, error: err.message };
+        }
+    };
+
     // Supprimer une vente (remboursement)
     const handleDeleteSale = async (id) => {
         if (!window.confirm('Annuler cette vente et rembourser le client ? Le stock sera restauré.')) return;
@@ -413,6 +437,7 @@ export default function App() {
                     <SalesHistoryView
                         sales={sales}
                         onDeleteSale={handleDeleteSale}
+                        onUpdateSale={handleUpdateSale}
                     />
                 ) : activeTab === 'credits' ? (
                     <CreditSalesView

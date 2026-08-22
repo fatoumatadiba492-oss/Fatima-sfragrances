@@ -232,6 +232,32 @@ def delete_sale(sale_id):
     
     return jsonify({'message': 'Vente annulée'}), 200
 
+@app.route('/api/sales/<int:sale_id>', methods=['PUT'])
+def update_sale(sale_id):
+    """Modifier une vente (quantité, montant)"""
+    sale = Sale.query.get_or_404(sale_id)
+    data = request.get_json() or {}
+    product = Product.query.get(sale.product_id)
+
+    new_quantity = int(data.get('quantity', sale.quantity))
+    new_amount = float(data.get('amount', sale.amount))
+    new_expense = float(data.get('expense', sale.expense))
+
+    diff = sale.quantity - new_quantity
+    if product:
+        if diff < 0 and abs(diff) > product.remaining_stock:
+            return jsonify({'error': f'Stock insuffisant. Restant: {product.remaining_stock}'}), 400
+        product.remaining_stock += diff
+        product.sold -= diff
+
+    sale.quantity = new_quantity
+    sale.amount = new_amount
+    sale.expense = new_expense
+    sale.net_amount = new_amount - new_expense
+
+    db.session.commit()
+    return jsonify(sale.to_dict()), 200
+
 # ---------- ROUTES VENTES À CRÉDIT ----------
 
 @app.route('/api/credits', methods=['GET'])
