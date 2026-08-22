@@ -18,15 +18,6 @@ export default function SalesHistoryView({ sales, onDeleteSale, onUpdateSale }) 
         });
     };
 
-    const handleQuantityChange = (newQty) => {
-        const qty = Number(newQty) || 0;
-        setEditData(prev => ({
-            ...prev,
-            quantity: newQty,
-            amount: Math.round(qty * prev.unitPrice)
-        }));
-    };
-
     const cancelEdit = () => {
         setEditingId(null);
         setEditData({ quantity: '', unitPrice: 0, amount: '', expense: '' });
@@ -85,25 +76,27 @@ export default function SalesHistoryView({ sales, onDeleteSale, onUpdateSale }) 
                                                     type="number"
                                                     min="1"
                                                     value={editData.quantity}
-                                                    onChange={(e) => handleQuantityChange(e.target.value)}
-                                                    className="w-16 border border-gray-300 rounded px-2 py-1 text-center"
+                                                    onChange={(e) => {
+                                                        const qty = Number(e.target.value) || 0;
+                                                        setEditData(prev => ({
+                                                            ...prev,
+                                                            quantity: e.target.value,
+                                                            amount: Math.round(qty * prev.unitPrice)
+                                                        }));
+                                                    }}
+                                                    className="w-16 border border-amber-400 rounded px-2 py-1 text-center bg-amber-50"
                                                 />
                                             </td>
-                                            <td className="p-3 text-right">
-                                                <input
-                                                    type="number"
-                                                    min="0"
-                                                    value={editData.amount}
-                                                    onChange={(e) => setEditData({...editData, amount: e.target.value})}
-                                                    className="w-24 border border-gray-300 rounded px-2 py-1 text-right"
-                                                />
+                                            <td className="p-3 text-right font-semibold text-gray-700">
+                                                {formatCurrency(editData.amount)}
+                                                <div className="text-xs text-gray-400">{formatCurrency(editData.unitPrice)}/unité</div>
                                             </td>
                                             <td className="p-3 text-right">
                                                 <input
                                                     type="number"
                                                     min="0"
                                                     value={editData.expense}
-                                                    onChange={(e) => setEditData({...editData, expense: e.target.value})}
+                                                    onChange={(e) => setEditData(prev => ({...prev, expense: e.target.value}))}
                                                     className="w-20 border border-gray-300 rounded px-2 py-1 text-right"
                                                 />
                                             </td>
